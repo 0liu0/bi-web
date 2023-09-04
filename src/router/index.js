@@ -1,22 +1,27 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import LoginView from '../views/LoginView.vue'
+import {createRouter, createWebHistory} from 'vue-router'
+import MainView from '../views/MainView.vue'
 
 const routes = [
-  {
-    path: '/',
-    name: 'login',
-    component: LoginView
-  },
-  {
-    path: '/about',
-    name: 'about',
-    component: () => import('../views/AboutView.vue')
-  }
+    {
+        path: '/',
+        name: 'main',
+        component: MainView
+    },
+    // 懒加载
+    {
+        path: '/registry',
+        name: 'registry',
+        component: () => import('../views/RegisterView.vue')
+    }, {
+        path: '/login',
+        name: 'login',
+        component: () => import('../views/LoginView.vue')
+    }
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
+    history: createWebHistory(process.env.BASE_URL),
+    routes
 })
 
 export default router

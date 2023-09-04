@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve  --port 9900",
+    "serve": "vue-cli-service serve --mode dev --port 9900",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -40,7 +40,9 @@
       "parser": "@babel/eslint-parser"
     },
     "rules": {
-      "vue/multi-word-component-names": 0
+      "vue/multi-word-component-names": 0,
+      "no-unused-vars": "off",
+      "vue/no-parsing-error": "off"
     }
   },
   "browserslist": [
