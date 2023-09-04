@@ -1,4 +1,6 @@
 import axios from "axios";
+import store from "@/store";
+import {Tool} from "@/utils/tool";
 
 /**
  * Axios初始化操作
@@ -18,11 +20,11 @@ const myAxios = axios.create({
  */
 myAxios.interceptors.request.use(function (config) {
     console.log('请求参数：', config);
-    // const token = store.state.user.token;
-    // if (Tool.isNotEmpty(token)) {
-    //     config.headers.token = token;
-    //     console.log("请求headers增加token:", token);
-    // }
+    const token = store.state.user.token;
+    if (Tool.isNotEmpty(token)) {
+        config.headers.token = token;
+        console.log("请求headers增加token:", token);
+    }
     return config;
 }, error => {
     return Promise.reject(error);

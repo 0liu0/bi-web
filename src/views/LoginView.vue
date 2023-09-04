@@ -54,6 +54,7 @@ import {onMounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import myAxios from "@/utils/myAxios";
 import {message} from "ant-design-vue";
+import { useStore } from 'vuex'
 // 这些参数在一个登录中不可能都会用到，但是够全了，以后整合其他登录再加
 const userLogin = reactive({
   loginType: 0, // 登录类型：0->账号密码；1->邮箱验证，默认是密码方式，后续添加邮箱验证
@@ -64,6 +65,7 @@ const userLogin = reactive({
 })
 
 const router = useRouter();
+const store = useStore();
 let mailCode = ref("")
 let captcha = ref("");
 onMounted(() => {
@@ -99,6 +101,9 @@ function login() {
   myAxios.post("/api/v1/user/login", userLogin).then(resp => {
     if (resp.data.code===0) {
       message.success("恭喜您登录成功！")
+      // 将用户信息保存到浏览器中
+      store.commit("setUserToSessionStorage",resp.data.data)
+      console.log("setUserToSessionStorage:",resp.data.data)
       router.push("/");
     }else {
       message.error("登录失败：" + resp.data.msg)
