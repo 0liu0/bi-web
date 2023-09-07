@@ -69,6 +69,7 @@
         </a-layout-sider>
         <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
           Content
+          <a-button type="primary" @click="send">nihao a</a-button>
         </a-layout-content>
       </a-layout>
     </a-layout-content>
@@ -79,8 +80,17 @@
 </template>
 <script setup>
 import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons-vue';
-import { defineComponent, ref } from 'vue';
 import store from "@/store";
+import myAxios from "@/utils/myAxios";
+
+const send = ()=> {
+  myAxios.get("/api/v1/user/test").then(resp => {
+    console.log("resp:::",resp)
+  })
+}
+
+
+
 </script>
 <style>
 #components-layout-demo-top-side .logo {
