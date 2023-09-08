@@ -15,7 +15,7 @@
               <a-textarea v-model:value="formState.goal" />
             </a-form-item>
             <br>
-            <a-form-item label="图表类型" name="region">
+            <a-form-item label="图表类型" name="region" style="text-align: left" >
               <a-select v-model:value="formState.chartType" placeholder="选择您想要生成的图表类型">
                 <a-select-option value="line">线型图</a-select-option>
                 <a-select-option value="bar">柱状图</a-select-option>
@@ -25,13 +25,13 @@
             <!--上传文件组件-->
             <a-form-item label="上传文件">
               <a-upload :beforeUpload="beforeUpload">
-                <a-button style="margin-left: -186px">
+                <a-button style="margin-left: -245px">
                   <CloudUploadOutlined/> 上传CSV文件
                 </a-button>
               </a-upload>
             </a-form-item>
 
-            <a-form-item style="margin-left: -135px" :wrapper-col="{ span: 14, offset: 4 }">
+            <a-form-item style="margin-left: -215px" :wrapper-col="{ span: 14, offset: 4 }">
               <a-button type="primary" @click="onSubmit">提交</a-button>
             </a-form-item>
           </a-form>
