@@ -1,6 +1,6 @@
 <template>
-  <div :style="bgStyle" style="height: 1120px">
-    <h1 style="font-size: 50px">这是生成图表内容</h1>
+  <div :style="bgStyle" style="height: 1120px;padding: 20px">
+    <h1 style="font-size: 50px;color: #00a6bc">欢迎来到BI图表生成工具</h1>
     <a-row style="margin-top: 60px">
       <a-col :span="8">
         <div class="upload">
@@ -36,9 +36,14 @@
             </a-form-item>
           </a-form>
         </div>
+        <div class="suggestion">
+          这是建议部分
+        </div>
       </a-col>
-      <a-col :span="16" style="background-color:#333;">
-        <h1>分析结论</h1>
+      <a-col :span="16">
+        <div class="echarts">
+          <h1>分析结论</h1>
+        </div>
       </a-col>
     </a-row>
   </div>
@@ -98,9 +103,30 @@ const beforeUpload = (file) => {
 
 <style scoped>
 .upload {
-  width: 600px;
+  width: 700px;
   height: 500px;
   margin-left: 100px;
+  border-color: #3399ff;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255,255,255,.75);
+}
+.echarts {
+  width: 1250px;
+  height: 900px;
+  margin-left: 100px;
+  border-color: #3399ff;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255,255,255,.75);
+}
+.suggestion {
+  width: 700px;
+  height: 352px;
+  margin-left: 100px;
+  margin-top: 50px;
   border-color: #3399ff;
   border-radius: 20px;
   padding: 25px;
