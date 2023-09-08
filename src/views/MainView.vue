@@ -6,18 +6,8 @@
   </a-layout>
 </template>
 <script setup>
-import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons-vue';
-import store from "@/store";
-import myAxios from "@/utils/myAxios";
 import MyHeader from "@/components/header/MyHeader.vue"
-import MyContent from "@/components/content/MyContent.vue";
-import MyFooter from "@/components/footer/MyFooter.vue";
-
-const send = ()=> {
-  myAxios.get("/api/v1/user/test").then(resp => {
-    console.log("resp:::",resp)
-  })
-}
+import MyFooter from "@/components/footer/MyFooter.vue"
 
 
 

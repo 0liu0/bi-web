@@ -5,6 +5,8 @@ import {message} from "ant-design-vue";
 import MyContent from "@/components/content/MyContent.vue";
 import UserInfo from "@/components/user/index.vue"
 import AboutUs from "@/components/about/index.vue"
+import MyChart from "@/components/content/item/MyChart.vue";
+import GenChart from "@/components/content/item/GenChart.vue";
 
 const routes = [
     {
@@ -14,7 +16,20 @@ const routes = [
         children: [
             {
                 path: 'content',
-                component: MyContent
+                name: 'content',
+                component: MyContent,
+                children: [
+                    {
+                        path: 'my-chart',
+                        name: "my-chart",
+                        component: MyChart
+                    },
+                    {
+                        path: 'gen-chart',
+                        name: "gen-chart",
+                        component: GenChart
+                    },
+                ]
             },
             {
                 path: 'user',
