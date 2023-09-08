@@ -2,12 +2,28 @@ import {createRouter, createWebHistory} from 'vue-router'
 import MainView from '../views/MainView.vue'
 import store from '@/store';
 import {message} from "ant-design-vue";
+import MyContent from "@/components/content/MyContent.vue";
+import UserInfo from "@/components/user/index.vue"
+import AboutUs from "@/components/about/index.vue"
 
 const routes = [
     {
-        path: '/',
+        path: '/bi',
         name: 'main',
-        component: MainView
+        component: MainView,
+        children: [
+            {
+                path: 'content',
+                component: MyContent
+            },
+            {
+                path: 'user',
+                component: UserInfo
+            }, {
+                path: 'about',
+                component: AboutUs
+            },
+        ]
     },
     // 懒加载
     {

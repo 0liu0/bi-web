@@ -1,87 +1,17 @@
 <template>
   <a-layout id="components-layout-demo-top-side">
-    <a-layout-header class="header">
-      <div class="logo">
-        <h1>欢迎来到BI</h1>
-      </div>
-      <a-menu
-          v-model:selectedKeys="selectedKeys1"
-          theme="dark"
-          mode="horizontal"
-          :style="{ lineHeight: '64px' }"
-      >
-        <a-menu-item key="1">nav 1</a-menu-item>
-        <a-menu-item key="2">nav 2</a-menu-item>
-        <a-menu-item key="3">nav 3</a-menu-item>
-      </a-menu>
-    </a-layout-header>
-    <a-layout-content style="padding: 0 50px">
-      <a-breadcrumb style="margin: 16px 0">
-        <a-breadcrumb-item>Home</a-breadcrumb-item>
-        <a-breadcrumb-item>List</a-breadcrumb-item>
-        <a-breadcrumb-item>App</a-breadcrumb-item>
-      </a-breadcrumb>
-      <a-layout style="padding: 24px 0; background: #fff">
-        <a-layout-sider width="200" style="background: #fff">
-          <a-menu
-              v-model:selectedKeys="selectedKeys2"
-              v-model:openKeys="openKeys"
-              mode="inline"
-              style="height: 100%"
-          >
-            <a-sub-menu key="sub1">
-              <template #title>
-                <span>
-                  <user-outlined />
-                  subnav 1
-                </span>
-              </template>
-              <a-menu-item key="1">option1</a-menu-item>
-              <a-menu-item key="2">option2</a-menu-item>
-              <a-menu-item key="3">option3</a-menu-item>
-              <a-menu-item key="4">option4</a-menu-item>
-            </a-sub-menu>
-            <a-sub-menu key="sub2">
-              <template #title>
-                <span>
-                  <laptop-outlined />
-                  subnav 2
-                </span>
-              </template>
-              <a-menu-item key="5">option5</a-menu-item>
-              <a-menu-item key="6">option6</a-menu-item>
-              <a-menu-item key="7">option7</a-menu-item>
-              <a-menu-item key="8">option8</a-menu-item>
-            </a-sub-menu>
-            <a-sub-menu key="sub3">
-              <template #title>
-                <span>
-                  <notification-outlined />
-                  subnav 3
-                </span>
-              </template>
-              <a-menu-item key="9">option9</a-menu-item>
-              <a-menu-item key="10">option10</a-menu-item>
-              <a-menu-item key="11">option11</a-menu-item>
-              <a-menu-item key="12">option12</a-menu-item>
-            </a-sub-menu>
-          </a-menu>
-        </a-layout-sider>
-        <a-layout-content :style="{ padding: '0 24px', minHeight: '280px' }">
-          Content
-          <a-button type="primary" @click="send">nihao a</a-button>
-        </a-layout-content>
-      </a-layout>
-    </a-layout-content>
-    <a-layout-footer style="text-align: center">
-      <h5>欢迎光临：{{store.state.user.name}} <img style="border-radius: 25px;width: 25px;vertical-align: bottom;" :src="store.state.user.headImg"></h5>
-    </a-layout-footer>
+    <MyHeader/>
+    <router-view/>
+    <MyFooter/>
   </a-layout>
 </template>
 <script setup>
 import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons-vue';
 import store from "@/store";
 import myAxios from "@/utils/myAxios";
+import MyHeader from "@/components/header/MyHeader.vue"
+import MyContent from "@/components/content/MyContent.vue";
+import MyFooter from "@/components/footer/MyFooter.vue";
 
 const send = ()=> {
   myAxios.get("/api/v1/user/test").then(resp => {

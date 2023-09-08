@@ -103,7 +103,7 @@ function login() {
       message.success("恭喜您登录成功！")
       // 将用户信息保存到浏览器中
       store.commit("setUserToSessionStorage",resp.data.data)
-      router.push("/");
+      router.push("/bi/content");
     }else {
       message.error("登录失败：" + resp.data.msg)
       if (userLogin.loginType===0) {
