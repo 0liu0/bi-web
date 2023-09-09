@@ -251,6 +251,7 @@ img {
   width: 100%;
   font-size: 1em;
   padding: 10px 15px;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .container .drop .content form .inputBox input[type="submit"] {
