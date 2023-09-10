@@ -144,7 +144,6 @@ const onSubmit = () => {
       console.log('echartsInfo::',echartsInfo)
       if (myChart && echartsInfo.echarts) {
         const option = echartsInfo.echarts; // 或者其他转换逻辑
-        console.log("转换了！" + option.toString())
         myChart.setOption(option);
       }
     } else {
