@@ -11,6 +11,7 @@
         :autosize=true
         class="search"
     />
+    <a-empty v-if="chartList.length===0" style="margin-top: 400px" description="暂无数据" />
     <div style="padding: 20px;opacity: .75">
       <a-row :gutter="16">
         <div class="echarts" v-for="item in chartList" :key="item.id">
