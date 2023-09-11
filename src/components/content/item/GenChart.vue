@@ -33,7 +33,7 @@
               </a-upload>
             </a-form-item>
             <a-form-item style="margin-left: -215px" :wrapper-col="{ span: 14, offset: 4 }">
-              <a-button type="primary" @click="onSubmit">提交</a-button>
+              <a-button :loading="btnLoading" type="primary" @click="onSubmit">提交</a-button>
             </a-form-item>
           </a-form>
         </div>
@@ -89,7 +89,7 @@ const labelCol = {
 const wrapperCol = {
   span: 14,
 };
-
+let btnLoading = ref(false)
 let isActive = ref(false)
 
 const formState = reactive({
@@ -124,10 +124,12 @@ const uploadedFile = ref(null); // 用于存储上传的文件
  */
 const onSubmit = () => {
   isActive.value = true
+  btnLoading.value = true
   const formData = new FormData();
   formData.append('name', formState.name);
   formData.append('goal', formState.goal);
   formData.append('chartType', formState.chartType);
+  message.success("小的正在努力请稍等哦")
   // 添加上传的文件
   if (uploadedFile.value) {
     formData.append('file', uploadedFile.value);
@@ -150,6 +152,7 @@ const onSubmit = () => {
       message.error(resp.data.msg)
     }
     isActive.value = false
+    btnLoading.value = false
   })
 };
 /**
