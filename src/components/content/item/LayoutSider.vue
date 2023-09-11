@@ -20,13 +20,23 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from "vue";
 
-import {ref} from "vue";
+let selectedKeys = ref(['1']);
 
-let selectedKeys = ref(['1'])
+// 初始化时从localStorage读取selectedKey
+onMounted(() => {
+  const storedSelectedKey = localStorage.getItem("selectedKey");
+  if (storedSelectedKey) {
+    selectedKeys.value = [storedSelectedKey];
+  }
+});
+
 const changeContent = (info) => {
-  selectedKeys.value = [info.key]
-}
+  selectedKeys.value = [info.key];
+  // 选项改变时更新localStorage
+  localStorage.setItem("selectedKey", info.key);
+};
 </script>
 
 <style scoped>
