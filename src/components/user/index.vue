@@ -14,7 +14,23 @@
               <button @click="cancelEdit" class="button-cancel">Cancel</button>
             </div>
             <div v-else>
-              <img :src="userInfo.headImg" alt="User Avatar" class="user-avatar"/>
+              <a-upload
+                  v-model:file-list="fileList"
+                  name="avatar"
+                  list-type="picture-card"
+                  class="avatar-uploader"
+                  :show-upload-list="false"
+                  action="http://127.0.0.1:8000/api/v1/file/upload/head-img"
+                  :before-upload="beforeUpload"
+                  @change="handleChange"
+              >
+                <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
+                <div v-else>
+                  <loading-outlined v-if="loading"></loading-outlined>
+                  <plus-outlined v-else></plus-outlined>
+                  <div class="ant-upload-text">Upload</div>
+                </div>
+              </a-upload>
               <p class="user-name"><h1 class="h">用户昵称：</h1>{{ userInfo.name }}</p>
               <hr>
               <p class="user-email"><h1 class="h">用户邮箱：</h1>{{ userInfo.mail }}</p>
@@ -51,7 +67,8 @@
 import {onMounted, ref} from 'vue';
 import bgImage from "@/assets/z1.jpg";
 import store from "@/store";
-
+import myAxios from "@/utils/myAxios";
+import {message} from "ant-design-vue";
 const bgStyle = ref(`background-image: url('${bgImage}');`);
 
 const userInfo = ref({
@@ -69,11 +86,21 @@ const userInfo = ref({
 onMounted(()=>{
   userInfo.value = store.state.user
   editableInfo.value = store.state.user
+  imageUrl.value = store.state.user.headImg
 })
 
 const editableInfo = ref({});
 
 const editing = ref(false);
+
+function getBase64(img, callback) {
+  const reader = new FileReader();
+  reader.addEventListener('load', () => callback(reader.result));
+  reader.readAsDataURL(img);
+}
+const fileList = ref([]);
+const loading = ref(false);
+const imageUrl = ref('');
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -102,6 +129,34 @@ const getPoints = () => {
 const getVIP = () => {
   console.log("获取会员")
 }
+const handleChange = info => {
+  if (info.file.status === 'uploading') {
+    loading.value = true;
+    return;
+  }
+  if (info.file.status === 'done') {
+    // Get this url from response in real world.
+    getBase64(info.file.originFileObj, base64Url => {
+      imageUrl.value = base64Url;
+      loading.value = false;
+    });
+  }
+  if (info.file.status === 'error') {
+    loading.value = false;
+    message.error('upload error');
+  }
+};
+const beforeUpload = file => {
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+  if (!isJpgOrPng) {
+    message.error('You can only upload JPG file!');
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error('Image must smaller than 2MB!');
+  }
+  return isJpgOrPng && isLt2M;
+};
 </script>
 
 <style scoped>
