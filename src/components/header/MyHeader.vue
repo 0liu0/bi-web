@@ -7,7 +7,7 @@
       <!--      <h1>nihao a</h1>-->
       <a-dropdown>
         <a class="ant-dropdown-link" style="color: white;" @click.prevent>
-          <img style="margin-right: 5px;margin-bottom: 20px; border-radius: 25px;width: 25px;vertical-align: bottom;" :src="store.state.user.headImg"  alt="你好啊"/> 登录用户：{{ store.state.user.name }}
+          <img style="margin-right: 10px;margin-bottom: 20px; border-radius: 25px;width: 25px;vertical-align: bottom;" :src="store.state.user.headImg"  alt="你好啊"/>{{ store.state.user.name }}
         </a>
         <template #overlay>
           <a-menu>
