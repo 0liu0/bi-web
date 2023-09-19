@@ -43,8 +43,12 @@
               <a-button style="margin-left: 20px" type="primary" size="small" primary @click="getPoints">每日领取
               </a-button>
             </p>
-            <p class="privilege"><span>身份：</span>{{ userInfo.points }}
+            <p class="privilege"><span>身份：</span>{{ userRole }}
               <a-button style="margin-left: 20px" type="primary" size="small" primary @click="getVIP">获取会员
+              </a-button>
+            </p>
+            <p class="privilege">
+              <a-button style="margin-top: 10px" type="primary" size="small" primary @click="getVIP">点击更改密码
               </a-button>
             </p>
           </div>
@@ -55,7 +59,7 @@
 </template>
 
 <script setup>
-import {onMounted, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import bgImage from "@/assets/z1.jpg";
 import store from "@/store";
 import myAxios from "@/utils/myAxios";
@@ -72,7 +76,22 @@ const userInfo = ref({
   points: 0,
   sex: 1,
   slogan: "人生需要动态规划，",
-  token: "liuche-bieyJhbGciOiJIUzI1NiJ9..."
+  token: "liuche-bieyJhbGciOiJIUzI1NiJ9...",
+  role: 2
+});
+
+
+const userRole = computed(() => {
+  switch (userInfo.value.role) {
+    case 0:
+      return '管理员';
+    case 1:
+      return 'VIP';
+    case 2:
+      return '普通用户';
+    default:
+      return '未知';
+  }
 });
 
 onMounted(() => {
@@ -82,16 +101,9 @@ onMounted(() => {
 })
 
 const editableInfo = ref({});
-
+const updateInfo = ref({});
 const editing = ref(false);
 
-function getBase64(img, callback) {
-  const reader = new FileReader();
-  reader.addEventListener('load', () => callback(reader.result));
-  reader.readAsDataURL(img);
-}
-
-const fileList = ref([]);
 const loading = ref(false);
 const imageUrl = ref('');
 
@@ -107,9 +119,19 @@ const startEdit = () => {
 };
 
 const saveChanges = () => {
-  // TODO: Save the changes to the backend.
-  userInfo.value = editableInfo.value;
   editing.value = false;
+  updateInfo.value.name = userInfo.value.name;
+  updateInfo.value.slogan = userInfo.value.slogan;
+  myAxios.post("/api/v1/user/update", editableInfo.value).then(resp => {
+    if (resp.data.code === 0 && resp.data.data) {
+      userInfo.value = editableInfo.value;
+      // 前端更新用户数据 todo
+      store.commit("setUserToSessionStorage", userInfo.value)
+      message.success("用户数据更改成功！")
+    } else {
+      message.warn("网络繁忙请稍后再试")
+    }
+  })
   console.log("editableInfo", editableInfo.value)
 };
 
@@ -118,6 +140,27 @@ const cancelEdit = () => {
 };
 const getPoints = () => {
   console.log("每日领取")
+  myAxios.get("/api/v1/user/daily-claim").then(resp => {
+    if (resp.data.code === 0 && resp.data.data) {
+      message.success("领取成功！")
+      refreshUserInfo()
+    } else {
+      message.warn("您已达每日领取最大次数！")
+    }
+  })
+}
+
+const refreshUserInfo = () => {
+  myAxios.get("/api/v1/user/get/user-info").then(resp => {
+    if (resp.data.code === 0) {
+      // 得到用户最新数据，并保存至前端
+      const curInfo = resp.data.data;
+      curInfo.token = userInfo.value.token
+      store.commit("setUserToSessionStorage",curInfo);
+    } else {
+      console.log("网络繁忙！")
+    }
+  })
 }
 const getVIP = () => {
   console.log("获取会员")
@@ -134,13 +177,6 @@ const getVIP = () => {
   border-radius: 12px;
   box-shadow: 0 0 12px #ccc;
 }
-
-.user-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-}
-
 
 .user-email,
 .user-slogan,
