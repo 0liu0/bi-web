@@ -8,29 +8,20 @@
           <div class="user-info-container" style="background-color:#fff;opacity: .9">
             <h1 style="margin-bottom: 30px;font-size: 30px">用户个人信息</h1>
             <div v-if="editing">
-              <a-input addon-before="用户昵称" :value="editableInfo.name" @input="editableInfo.name = $event.target.value" size="large" style="margin-bottom: 20px"/>
-              <a-input addon-before="用户签名" :value="editableInfo.slogan" @input="editableInfo.slogan = $event.target.value" v-model="editableInfo.slogan" size="large"/>
+              <a-input addon-before="用户昵称" :value="editableInfo.name"
+                       @input="editableInfo.name = $event.target.value" size="large" style="margin-bottom: 20px"/>
+              <a-input addon-before="用户签名" :value="editableInfo.slogan"
+                       @input="editableInfo.slogan = $event.target.value" v-model="editableInfo.slogan" size="large"/>
               <button @click="saveChanges" class="button-save" style="margin-right: 20px">Save</button>
               <button @click="cancelEdit" class="button-cancel">Cancel</button>
             </div>
             <div v-else>
-              <a-upload
-                  v-model:file-list="fileList"
-                  name="avatar"
-                  list-type="picture-card"
-                  class="avatar-uploader"
-                  :show-upload-list="false"
-                  action="http://127.0.0.1:8000/api/v1/file/upload/head-img"
-                  :before-upload="beforeUpload"
-                  @change="handleChange"
-              >
-                <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
-                <div v-else>
-                  <loading-outlined v-if="loading"></loading-outlined>
-                  <plus-outlined v-else></plus-outlined>
-                  <div class="ant-upload-text">Upload</div>
-                </div>
-              </a-upload>
+              <img v-if="imageUrl" :src="imageUrl" alt="avatar" style="width: 100px;height: 100px;border-radius: 50px"/>
+              <div v-else>
+                <loading-outlined v-if="loading"></loading-outlined>
+                <plus-outlined v-else></plus-outlined>
+                <div class="ant-upload-text">Upload</div>
+              </div>
               <p class="user-name"><h1 class="h">用户昵称：</h1>{{ userInfo.name }}</p>
               <hr>
               <p class="user-email"><h1 class="h">用户邮箱：</h1>{{ userInfo.mail }}</p>
@@ -69,6 +60,7 @@ import bgImage from "@/assets/z1.jpg";
 import store from "@/store";
 import myAxios from "@/utils/myAxios";
 import {message} from "ant-design-vue";
+
 const bgStyle = ref(`background-image: url('${bgImage}');`);
 
 const userInfo = ref({
@@ -83,7 +75,7 @@ const userInfo = ref({
   token: "liuche-bieyJhbGciOiJIUzI1NiJ9..."
 });
 
-onMounted(()=>{
+onMounted(() => {
   userInfo.value = store.state.user
   editableInfo.value = store.state.user
   imageUrl.value = store.state.user.headImg
@@ -98,6 +90,7 @@ function getBase64(img, callback) {
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
 }
+
 const fileList = ref([]);
 const loading = ref(false);
 const imageUrl = ref('');
@@ -110,14 +103,14 @@ const formatDate = (dateString) => {
 const startEdit = () => {
   editableInfo.value = {...userInfo.value};
   editing.value = true;
-  console.log("userInfo.value:",userInfo.value)
+  console.log("userInfo.value:", userInfo.value)
 };
 
 const saveChanges = () => {
   // TODO: Save the changes to the backend.
   userInfo.value = editableInfo.value;
   editing.value = false;
-  console.log("editableInfo",editableInfo.value)
+  console.log("editableInfo", editableInfo.value)
 };
 
 const cancelEdit = () => {
@@ -129,34 +122,6 @@ const getPoints = () => {
 const getVIP = () => {
   console.log("获取会员")
 }
-const handleChange = info => {
-  if (info.file.status === 'uploading') {
-    loading.value = true;
-    return;
-  }
-  if (info.file.status === 'done') {
-    // Get this url from response in real world.
-    getBase64(info.file.originFileObj, base64Url => {
-      imageUrl.value = base64Url;
-      loading.value = false;
-    });
-  }
-  if (info.file.status === 'error') {
-    loading.value = false;
-    message.error('upload error');
-  }
-};
-const beforeUpload = file => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-  if (!isJpgOrPng) {
-    message.error('You can only upload JPG file!');
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-  return isJpgOrPng && isLt2M;
-};
 </script>
 
 <style scoped>
