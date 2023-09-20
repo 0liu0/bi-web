@@ -15,6 +15,11 @@
         <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp创建图表</span>
         <router-link to="/bi/content/gen-chart"/>
       </a-menu-item>
+      <a-menu-item key="3">
+        <BarChartOutlined :style="{fontSize: '18px',color:'#08c'}"/>
+        <span style="font-weight: 500">&nbsp&nbsp&nbsp&nbsp&nbsp快速生成</span>
+        <router-link to="/bi/content/async-gen-chart"/>
+      </a-menu-item>
     </a-menu>
   </a-layout-sider>
 </template>
