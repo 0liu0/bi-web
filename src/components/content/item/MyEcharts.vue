@@ -1,7 +1,26 @@
 <template>
   <div class="two">
     <h3 class="info">表名：{{ props.echarts_item.name }}</h3>
-    <div class="echarts" :id="`echarts-${props.echarts_item.id}`">
+    <div v-show="echarts_item.status===1" class="echarts" :id="`echarts-${props.echarts_item.id}`">
+    </div>
+    <div v-show="echarts_item.status===2" class="echarts">
+      <a-skeleton />
+      <br/>
+      <h1 class="up" style="margin-top: 40px;font-size: 25px;color: #ff003e;font-weight: 500;z-index: 100">生成失败</h1>
+      <a-skeleton />
+      <br/>
+      <a-skeleton />
+    </div>
+    <div v-show="echarts_item.status===0" class="echarts">
+      <a-skeleton :active="true"/>
+      <br/>
+      <div class="up">
+        <a-spin size="large" class="custom-spin"/>
+        <h1 style="font-size: 25px;color: #3399ff;font-weight: 500">正在生成……</h1>
+      </div>
+      <a-skeleton :active="true"/>
+      <br/>
+      <a-skeleton :active="true"/>
     </div>
   </div>
 </template>
@@ -31,7 +50,8 @@ onMounted(() => {
 
 <style scoped>
 .echarts {
-  width: 710px;
+  position: relative;
+  width: 700px;
   height: 380px;
   border-color: #3399ff;
   border-bottom-left-radius: 20px;
@@ -40,12 +60,13 @@ onMounted(() => {
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   background-color: rgba(255, 255, 255, .75);
   transition: all .3s ease;
+  overflow: hidden;
 }
 
 .info {
   text-align: center;
   background-color: #3399ff;
-  width: 710px;
+  width: 700px;
   height: 50px;
   font-size: 25px;
   line-height: 50px;
@@ -62,5 +83,14 @@ onMounted(() => {
 .echarts:hover {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   opacity: 1;
+}
+.custom-spin >>> .ant-spin-dot {
+  font-size: 50px;
+}
+
+.up {
+  position: absolute;
+  top: 40%;
+  left: 40%;
 }
 </style>

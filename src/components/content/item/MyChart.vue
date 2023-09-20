@@ -11,6 +11,7 @@
         :autosize=true
         class="search"
     />
+    <a-button type="primary" size="large" style="position: absolute;top: 55px;right: 120px" @click="flush">点我刷新页面</a-button>
     <a-empty v-if="chartList.length===0" style="margin-top: 400px" description="暂无数据" />
     <div style="padding: 20px;opacity: .75">
       <a-row :gutter="16">
@@ -97,7 +98,11 @@ const handlePageChange = (newPage) => {
       message.error(resp.data.msg)
     }
   })
-  }
+}
+const flush = () =>{
+  loadCharts();
+  message.success("刷新成功！")
+}
 
 </script>
 
