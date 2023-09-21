@@ -1,15 +1,15 @@
 <template>
-  <div class="two">
+  <div class="two" @click="showChartInfo">
     <h3 class="info">表名：{{ props.echarts_item.name }}</h3>
     <div v-show="echarts_item.status===1" class="echarts" :id="`echarts-${props.echarts_item.id}`">
     </div>
     <div v-show="echarts_item.status===2" class="echarts">
-      <a-skeleton />
+      <a-skeleton/>
       <br/>
       <h1 class="up" style="margin-top: 40px;font-size: 25px;color: #ff003e;font-weight: 500;z-index: 100">生成失败</h1>
-      <a-skeleton />
+      <a-skeleton/>
       <br/>
-      <a-skeleton />
+      <a-skeleton/>
     </div>
     <div v-show="echarts_item.status===0" class="echarts">
       <a-skeleton :active="true"/>
@@ -29,6 +29,7 @@
 import {onMounted} from "vue";
 import * as echarts from "echarts";
 import {Tool} from "@/utils/tool";
+import router from "@/router";
 // eslint-disable-next-line no-undef
 const props = defineProps(['echarts_item'])
 
@@ -41,11 +42,15 @@ onMounted(() => {
     const option = props.echarts_item.echarts;
     // 使用刚指定的配置项和数据显示图表
     if (option && typeof option === 'object') {
-
       myChart.setOption(option);
     }
   }
 })
+
+const showChartInfo = () => {
+  console.log("跳转到图表详情页")
+  router.push({name:'chart-info', params: {id:props.echarts_item.id}})
+}
 </script>
 
 <style scoped>
@@ -80,10 +85,12 @@ onMounted(() => {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   opacity: 1;
 }
+
 .echarts:hover {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   opacity: 1;
 }
+
 .custom-spin >>> .ant-spin-dot {
   font-size: 50px;
 }

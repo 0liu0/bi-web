@@ -8,6 +8,7 @@ import AboutUs from "@/components/about/index.vue"
 import MyChart from "@/components/content/item/MyChart.vue";
 import GenChart from "@/components/content/item/GenChart.vue";
 import AsyncGenChart from "@/components/content/item/AsyncGenChart.vue";
+import ChartInfo from "@/components/content/item/ChartInfo.vue";
 
 const routes = [
     {
@@ -34,6 +35,11 @@ const routes = [
                       path: 'async-gen-chart',
                       name: 'async-gen-chart',
                       component: AsyncGenChart
+                    },
+                    {
+                        path: 'chart-info/:id',
+                        name: 'chart-info',
+                        component: ChartInfo
                     },
                 ]
             },

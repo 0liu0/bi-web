@@ -109,7 +109,6 @@ onMounted(() => {
   nextTick(() => {
     const element = document.getElementById('echarts');
     if (element) {
-      console.log("element",element)
       myChart = echarts.init(element);
       if (myChart && echartsInfo.echarts) {
         const option = JSON.parse(echartsInfo.echarts);
