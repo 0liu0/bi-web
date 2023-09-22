@@ -56,17 +56,18 @@ onMounted(() => {
 
 const loadCharts = () => {
   myAxios.post('/api/v1/chart/get-chart', chartVO).then(resp => {
-    console.log("resp:::", resp.data.data)
     if (resp.data.code === 0) {
-      chartList.value = resp.data.data.list // 将图列表信息赋值
-      chartVO.totalItems = resp.data.data.totalItems // 将图表信息赋值
-      console.log("chartList.value::", chartList.value)
-      console.log("totalItems::", chartVO.totalItems)
+      chartList.value = [];  // 清空chartList来触发组件的更新
+      setTimeout(() => {  // 添加延迟
+        chartList.value = resp.data.data.list;
+        chartVO.totalItems = resp.data.data.totalItems;
+      }, 10);
     } else {
-      message.error(resp.data.msg)
+      message.error(resp.data.msg);
     }
   })
 }
+
 
 // 根据表的名称查询用户图表
 const onSearch = () => {

@@ -157,6 +157,7 @@ const refreshUserInfo = () => {
       const curInfo = resp.data.data;
       curInfo.token = userInfo.value.token
       store.commit("setUserToSessionStorage",curInfo);
+      userInfo.value = store.state.user
     } else {
       console.log("网络繁忙！")
     }

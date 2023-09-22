@@ -49,8 +49,7 @@ import store from "@/store";
 
 const bgStyle = ref(`background-image: url('${bgImage}');`);
 let btnLoading = ref(false)
-let isActive = ref(false)
-
+let countdown;
 const labelCol = {
   style: {
     width: '150px',
@@ -71,7 +70,6 @@ const beforeUpload = (file) => {
   return false;
 };
 const onSubmit = () => {
-  isActive.value = true
   btnLoading.value = true
   const formData = new FormData();
   formData.append('name', formState.name);
@@ -79,7 +77,15 @@ const onSubmit = () => {
   formData.append('chartType', formState.chartType);
   message.success("小的正在努力请稍等哦")
   // 开启一个定时任务，将提交接口置灰3秒钟，防止用户瞎点把自己豆子点没了，毕竟一天三个豆
-
+  let remainingTime = 3;
+  btnLoading.value = true;
+  countdown = setInterval(() => {
+    remainingTime--;
+    if (remainingTime <= 0) {
+      clearInterval(countdown);
+      btnLoading.value = false;
+    }
+  }, 1000);
   // 添加上传的文件
   if (uploadedFile.value) {
     formData.append('file', uploadedFile.value);
@@ -95,8 +101,6 @@ const onSubmit = () => {
     } else {
       message.error(resp.data.msg)
     }
-    isActive.value = false
-    btnLoading.value = false
   })
 };
 // 通知提醒框

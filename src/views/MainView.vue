@@ -27,7 +27,7 @@ import MyFooter from "@/components/footer/MyFooter.vue"
   margin: 16px 0 16px 24px;
 }
 
-.site-layout-background {
-  background: #fff;
+#components-layout-demo-top-side {
+  background: #d7e7f5;
 }
 </style>
