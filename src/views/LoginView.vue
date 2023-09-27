@@ -14,24 +14,29 @@
               <div v-if="userLogin.loginType===0" class="inputBox">
                 <input type="password" v-model="userLogin.pwd" placeholder="请输入账号密码"/>
               </div>
-              <div v-if="userLogin.loginType===1" class="inputBox" id="notify" style="width: 130px">
-                <input type="text" v-model="mailCode" placeholder="邮箱验证码"/>
-                <div>
-                  <a-button ghost shape="round" size="large" style="margin-left: 12px;font-size: 6px;"
-                            @click="sendCode">发送验证码
-                  </a-button>
-                </div>
-              </div>
-              <div v-if="userLogin.loginType===0" class="inputBox" id="notify">
+              <div class="inputBox" id="notify">
                 <input type="text" v-model="userLogin.code" placeholder="图形验证码"/>
                 <img @click="getCaptcha()" :src="captcha" alt="nihao"
                      style="border-radius: 20px;width: 85%;margin-left: 10px"/>
               </div>
-              <div class="liuche" style="justify-content: right">
-                <a href="#">其他登录方式:账号密码</a>
+              <div v-if="userLogin.loginType===1" class="inputBox" id="notify" style="width: 130px">
+                <input type="text" v-model="userLogin.mailCode" placeholder="邮箱验证码"/>
+                <div>
+                  <a-button ghost :loading="btnLoading" shape="round" size="large" style="margin-left: 12px;font-size: 6px;"
+                            @click="sendCode">发送验证码
+                  </a-button>
+                </div>
               </div>
-              <div class="registry" @click="registry" style="justify-content: right">
-                <a href="#">点击注册</a>
+              <div style="height: 30px">
+                <div v-if="userLogin.loginType===0" class="liuche" @click="loginReserve">
+                  <a style="float: left;margin-left: 10px;" href="#">邮箱登录</a>
+                </div>
+                <div v-if="userLogin.loginType===1" class="liuche" @click="loginReserve">
+                  <a style="float: left;margin-left: 10px;" href="#">账号密码登录</a>
+                </div>
+                <div class="registry" @click="registry" style="float: right">
+                  <a href="#">注册账号</a>
+                </div>
               </div>
               <div class="inputBox" :style="{ margin: '0 auto' }">
                 <input
@@ -54,7 +59,7 @@ import {onMounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import myAxios from "@/utils/myAxios";
 import {message} from "ant-design-vue";
-import { useStore } from 'vuex'
+import {useStore} from 'vuex'
 // 这些参数在一个登录中不可能都会用到，但是够全了，以后整合其他登录再加
 const userLogin = reactive({
   loginType: 0, // 登录类型：0->账号密码；1->邮箱验证，默认是密码方式，后续添加邮箱验证
@@ -66,8 +71,9 @@ const userLogin = reactive({
 
 const router = useRouter();
 const store = useStore();
-let mailCode = ref("")
 let captcha = ref("");
+let countdown;
+let btnLoading = ref(false)
 onMounted(() => {
   getCaptcha()
 })
@@ -88,25 +94,38 @@ const getCaptcha = () => {
   });
 }
 
-
 // 发送验证码
 const sendCode = () => {
-  myAxios.get('/api/v1/notify/send-code/1').then(resp => {
-    console.log("resp:", resp)
+  // 开启一个定时任务，将提交接口置灰3秒钟，防止用户瞎点把自己豆子点没了，毕竟一天三个豆
+  let remainingTime =  60;
+  btnLoading.value = true;
+  countdown = setInterval(() => {
+    remainingTime--;
+    if (remainingTime <= 0) {
+      clearInterval(countdown);
+      btnLoading.value = false;
+    }
+  }, 1000);
+  myAxios.get(`/api/v1/notify/send-code/1?to=${userLogin.mail}&captchaCode=${userLogin.code}`).then(resp => {
+    if (resp.data.code===0) {
+      message.success("邮箱验证码已发送！")
+    } else {
+      message.warn(resp.data.msg)
+    }
   })
 }
 
 // 登录
 function login() {
   myAxios.post("/api/v1/user/login", userLogin).then(resp => {
-    if (resp.data.code===0) {
+    if (resp.data.code === 0) {
       message.success("恭喜您登录成功！")
       // 将用户信息保存到浏览器中
-      store.commit("setUserToSessionStorage",resp.data.data)
+      store.commit("setUserToSessionStorage", resp.data.data)
       router.push("/bi/content");
-    }else {
+    } else {
       message.error("登录失败：" + resp.data.msg)
-      if (userLogin.loginType===0) {
+      if (userLogin.loginType === 0) {
         // 刷新验证码，防止失效
         getCaptcha()
       }
@@ -118,6 +137,12 @@ function login() {
 const registry = () => {
   router.push('/registry')
 }
+// 点击进行邮箱登录
+const loginReserve = () => {
+  userLogin.loginType = userLogin.loginType === 1 ? 0 : 1 // 切换登录类型
+}
+
+
 </script>
 
 <style scoped>
@@ -273,5 +298,16 @@ img {
 
 .container .drop .content form .inputBox:last-child:hover {
   width: 150px;
+}
+
+
+a {
+  text-decoration: none;
+  color: #5297f7;
+}
+
+a:hover {
+  color: #333333;
+  font-size: 18px;
 }
 </style>

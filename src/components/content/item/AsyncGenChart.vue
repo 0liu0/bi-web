@@ -75,7 +75,7 @@ const onSubmit = () => {
   formData.append('name', formState.name);
   formData.append('goal', formState.goal);
   formData.append('chartType', formState.chartType);
-  message.success("小的正在努力请稍等哦")
+  // message.success("小的正在努力请稍等哦")
   // 开启一个定时任务，将提交接口置灰3秒钟，防止用户瞎点把自己豆子点没了，毕竟一天三个豆
   let remainingTime = 3;
   btnLoading.value = true;
