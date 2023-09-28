@@ -9,6 +9,7 @@ import MyChart from "@/components/content/item/MyChart.vue";
 import GenChart from "@/components/content/item/GenChart.vue";
 import AsyncGenChart from "@/components/content/item/AsyncGenChart.vue";
 import ChartInfo from "@/components/content/item/ChartInfo.vue";
+import index from "@/components/admin/index.vue";
 
 const routes = [
     {
@@ -49,6 +50,9 @@ const routes = [
             }, {
                 path: 'about',
                 component: AboutUs
+            }, {
+                path: 'admin',
+                component: index
             },
         ]
     },
