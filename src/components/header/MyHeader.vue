@@ -36,7 +36,7 @@
       <a-menu-item key="3">
         <router-link to="/bi/user">用户中心</router-link>
       </a-menu-item>
-      <a-menu-item key="4">
+      <a-menu-item v-if="store.state.user.role===0 || store.state.user.role===99 || store.state.user.role===2" key="4">
         <router-link to="/bi/admin">管理菜单</router-link>
       </a-menu-item>
     </a-menu>
