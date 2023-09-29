@@ -31,24 +31,24 @@
           {{ record.name }}
         </a>
       </template>
-      <template v-else-if="column.key === 'tags'">
+      <template v-else-if="column.key === 'role'">
         <span>
           <a-tag
-              :color="record.tag > 1 ? 'geekblue' : 'green'"
+              :color="record.role > 1 ? 'geekblue' : 'green'"
           >
-            {{ getTagChinese(record.tag) }}
+            {{ getTagChinese(record.role) }}
           </a-tag>
         </span>
       </template>
       <template v-else-if="column.key === 'action'">
         <span>
           <a-popconfirm title="确定要将此用户升级为会员吗？" @confirm="upgradeVIP(record.id)">
-            <template #icon><question-circle-outlined style="color: red" /></template>
+            <template #icon><question-circle-outlined style="color: red"/></template>
             <a-button class="btn" type="primary">升级会员</a-button>
           </a-popconfirm>
           <a-button class="btn" type="primary" @click="rechargeBeans(record.id)">充值BI豆</a-button>
           <a-popconfirm title="确定要删除此用户吗？" @confirm="deleteUser(record.id)">
-            <template #icon><question-circle-outlined style="color: red" /></template>
+            <template #icon><question-circle-outlined style="color: red"/></template>
             <a-button class="btn" type="primary" danger>删除</a-button>
           </a-popconfirm>
         </span>
@@ -71,8 +71,10 @@
 </template>
 
 <script setup>
-import {reactive, ref} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import {message} from "ant-design-vue";
+import myAxios from "@/utils/myAxios";
+
 let cutUserId = ref(-1) // 当前用户ID，用户充值用户的BI豆
 const searchValue = ref('');
 let rechargeNum = ref(10);
@@ -84,18 +86,18 @@ const columns = [
   },
   {
     title: '邮箱账号',
-    dataIndex: 'age',
-    key: 'age',
+    dataIndex: 'mail',
+    key: 'mail',
   },
   {
     title: 'BI豆剩余',
-    dataIndex: 'address',
-    key: 'address',
+    dataIndex: 'points',
+    key: 'points',
   },
   {
     title: '用户角色',
-    key: 'tags',
-    dataIndex: 'tags',
+    key: 'role',
+    dataIndex: 'role',
   },
   {
     title: '操作',
@@ -110,31 +112,14 @@ const userList = ref([
     address: 'New York No. 1 Lake Park',
     tag: 0,
   },
-  {
-    id: 2,
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tag: 1,
-  },
-  {
-    id: 3,
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tag: 2,
-  }, {
-    id: 2,
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tag: 1,
-  },
 ])
 const pagination = reactive({
   current: 1, // 当前页数
   pageSize: 10, // 每页显示的记录数
   total: 0 // 总记录数
+})
+onMounted(() => {
+  fetchData()
 })
 // 搜索
 const onSearch = searchValue => {
@@ -144,9 +129,10 @@ const onSearch = searchValue => {
 // 用户角色的转换
 const getTagChinese = (tag) => {
   const tagMap = {
-    0: '管理员',
-    1: 'VIP',
-    2: '普通用户'
+    0: '超级管理员',
+    1: '管理员',
+    2: 'VIP',
+    3: '普通用户'
   };
   return tagMap[tag] || '未知';
 }
@@ -164,7 +150,16 @@ const fetchData = () => {
   // 在这里发送 AJAX 请求来获取数据
   // 你需要使用 this.pagination.current 和 this.pagination.pageSize 来获取当前页的数据
   // 更新 this.userList 和 this.pagination.total
-  console.log("nihao a")
+  // console.log("nihao a")
+  myAxios.get(`/api/v1/admin/page/list-user?page=${pagination.current}&size=${pagination.pageSize}`)
+      .then(resp => {
+        if (resp.data.code === 0) {
+          userList.value = resp.data.data.list;
+          pagination.total = resp.data.data.total;
+        } else {
+          message.warn(resp.data.msg)
+        }
+      })
 }
 // 按钮的操作
 const upgradeVIP = (userID) => {
@@ -178,7 +173,7 @@ const loading = ref(false);
 const open = ref(false);
 const rechargeBeans = (curId) => {
   open.value = true;
-  cutUserId.value =curId
+  cutUserId.value = curId
   message.success("充值BI豆操作，当前用户ID：" + curId)
 }
 const handleOk = () => {
