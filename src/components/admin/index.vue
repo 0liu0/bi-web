@@ -158,22 +158,32 @@ const handleTableChange = (newPagination) => {
   fetchData();
 }
 const fetchData = () => {
-  myAxios.post('/api/v1/admin/page/list-user',{
-    page:pagination.current,
-    size:pagination.pageSize,
+  myAxios.post('/api/v1/admin/page/list-user', {
+    page: pagination.current,
+    size: pagination.pageSize,
     searchValue: searchValue.value
   }).then(resp => {
-        if (resp.data.code === 0) {
-          userList.value = resp.data.data.list;
-          pagination.total = resp.data.data.total;
-        } else {
-          message.warn(resp.data.msg)
-        }
-      })
+    if (resp.data.code === 0) {
+      userList.value = resp.data.data.list;
+      pagination.total = resp.data.data.total;
+    } else {
+      message.warn(resp.data.msg)
+    }
+  })
 }
 // 按钮的操作
 const deleteUser = (userID) => {
-  message.success("删除用户操作,userID=>" + userID)
+  myAxios.get(`/api/v1/admin/del-user/${userID}`).then(resp => {
+    if (resp.data.code === 0) {
+      message.success("删除用户成功！");
+      fetchData();
+    }else {
+      message.warn(resp.data.msg)
+    }
+  }).catch(error => {
+    console.log("error:",error)
+    message.error("系统异常，请联系管理员")
+  })
 }
 // 弹窗处理逻辑===========================
 const loading = ref(false);
