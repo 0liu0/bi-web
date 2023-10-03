@@ -3,13 +3,13 @@
   <a-space direction="vertical">
     <a-input-search
         v-model:value="searchValue"
-        placeholder="input search text"
+        placeholder="输入邮箱账号/昵称"
         size="large"
         @search="onSearch"
         class="search"
     >
       <template #enterButton>
-        <a-button>Custom</a-button>
+        <a-button>搜索</a-button>
       </template>
     </a-input-search>
   </a-space>
@@ -42,12 +42,9 @@
       </template>
       <template v-else-if="column.key === 'action'">
         <span>
-          <a-popconfirm title="确定要将此用户升级为会员吗？" @confirm="upgradeVIP(record.id)">
-            <template #icon><question-circle-outlined style="color: red"/></template>
-            <a-button class="btn" type="primary">升级会员</a-button>
-          </a-popconfirm>
+          <a-button class="btn" type="primary" @click="upgradeVIP(record.id)">升级会员</a-button>
           <a-button class="btn" type="primary" @click="rechargeBeans(record.id)">充值BI豆</a-button>
-          <a-popconfirm title="确定要删除此用户吗？" @confirm="deleteUser(record.id)">
+          <a-popconfirm title="确定要删除此用户吗？" @confirm="deleteUser(record.id)" okText="确认" cancel-text="取消">
             <template #icon><question-circle-outlined style="color: red"/></template>
             <a-button class="btn" type="primary" danger>删除</a-button>
           </a-popconfirm>
@@ -57,14 +54,27 @@
   </a-table>
   <div>
     <!--            <a-button type="primary" @click="showModal">Open Modal with customized footer</a-button>-->
-    <a-modal v-model:open="open" title="充值BI豆" @ok="handleOk">
+    <a-modal v-model:open="BIOpen" title="充值BI豆" @ok="BIHandleOk">
       <template #footer>
-        <a-button key="back" @click="handleCancel">取消</a-button>
-        <a-button key="submit" type="primary" :loading="loading" @click="handleOk">充值</a-button>
+        <a-button key="back" @click="BIHandleCancel">取消</a-button>
+        <a-button key="submit" type="primary" :loading="loading" @click="BIHandleOk">充值</a-button>
       </template>
       <div>
         <a-input-number id="inputNumber" v-model:value="rechargeNum" :min="10"/>
-        当前值：{{ rechargeNum }}
+        当前值：{{ rechargeNum }}粒
+      </div>
+    </a-modal>
+  </div>
+  <div>
+    <!--            <a-button type="primary" @click="showModal">Open Modal with customized footer</a-button>-->
+    <a-modal v-model:open="VIPOpen" title="充值会员" @ok="VIPHandleOk">
+      <template #footer>
+        <a-button key="back" @click="VIPHandleCancel">取消</a-button>
+        <a-button key="submit" type="primary" :loading="loading" @click="VIPHandleOk">充值</a-button>
+      </template>
+      <div>
+        <a-input-number id="inputNumber" v-model:value="vipDate" :min="10"/>
+        当前值：{{ vipDate }}月
       </div>
     </a-modal>
   </div>
@@ -76,8 +86,9 @@ import {message} from "ant-design-vue";
 import myAxios from "@/utils/myAxios";
 
 let cutUserId = ref(-1) // 当前用户ID，用户充值用户的BI豆
-const searchValue = ref('');
+let searchValue = ref('');
 let rechargeNum = ref(10);
+let vipDate = ref(1);
 const columns = [
   {
     name: '昵称',
@@ -122,9 +133,9 @@ onMounted(() => {
   fetchData()
 })
 // 搜索
-const onSearch = searchValue => {
-  console.log('use value', searchValue);
-  console.log('or use this.value', searchValue.value);
+const onSearch = () => {
+  pagination.current = 1
+  fetchData()
 };
 // 用户角色的转换
 const getTagChinese = (tag) => {
@@ -147,12 +158,11 @@ const handleTableChange = (newPagination) => {
   fetchData();
 }
 const fetchData = () => {
-  // 在这里发送 AJAX 请求来获取数据
-  // 你需要使用 this.pagination.current 和 this.pagination.pageSize 来获取当前页的数据
-  // 更新 this.userList 和 this.pagination.total
-  // console.log("nihao a")
-  myAxios.get(`/api/v1/admin/page/list-user?page=${pagination.current}&size=${pagination.pageSize}`)
-      .then(resp => {
+  myAxios.post('/api/v1/admin/page/list-user',{
+    page:pagination.current,
+    size:pagination.pageSize,
+    searchValue: searchValue.value
+  }).then(resp => {
         if (resp.data.code === 0) {
           userList.value = resp.data.data.list;
           pagination.total = resp.data.data.total;
@@ -162,31 +172,76 @@ const fetchData = () => {
       })
 }
 // 按钮的操作
-const upgradeVIP = (userID) => {
-  message.success("升级会员操作,userID=>" + userID)
-}
 const deleteUser = (userID) => {
   message.success("删除用户操作,userID=>" + userID)
 }
 // 弹窗处理逻辑===========================
 const loading = ref(false);
-const open = ref(false);
+const BIOpen = ref(false);
+const VIPOpen = ref(false);
 const rechargeBeans = (curId) => {
-  open.value = true;
+  BIOpen.value = true;
   cutUserId.value = curId
-  message.success("充值BI豆操作，当前用户ID：" + curId)
 }
-const handleOk = () => {
+const upgradeVIP = (userID) => {
+  VIPOpen.value = true;
+  cutUserId.value = userID
+}
+const BIHandleOk = () => {
   loading.value = true;
-  console.log("我去充值啦")
+  // message.success("充值BI豆操作,userID=>" + cutUserId.value)
+  // message.success("充值BI豆操作,数量=>" + rechargeNum.value)
   setTimeout(() => {
     loading.value = false;
-    open.value = false;
+    BIOpen.value = false;
+  }, 1000);
+  myAxios.get(`/api/v1/admin/recharge-bi-beans/${cutUserId.value}?nums=${rechargeNum.value}`).then(resp => {
+    // 验证响应和数据的存在
+    if (!resp || !resp.data) {
+      console.error('Invalid response:', resp);
+      message.error('充值失败，无效的响应');
+      return;
+    }
+    if (resp.data.code === 0) {
+      fetchData();
+      message.success("充值成功！")
+    } else {
+      message.warn(resp.data.msg)
+    }
+  }).catch(error => {
+  }).catch(error => {
+    console.error('Request error:', error);
+    message.error('充值请求失败');
+  })
+
+};
+const BIHandleCancel = () => {
+  BIOpen.value = false;
+};
+const VIPHandleCancel = () => {
+  VIPOpen.value = false;
+};
+
+const VIPHandleOk = () => {
+  loading.value = true;
+  message.success("升级会员操作,userID=>" + cutUserId.value)
+  setTimeout(() => {
+    loading.value = false;
+    VIPOpen.value = false;
   }, 2000);
-};
-const handleCancel = () => {
-  open.value = false;
-};
+
+  myAxios.get(`/api/v1/admin/upgrade-vip/${cutUserId.value}?month=${vipDate.value}`).then(resp => {
+    if (resp.data.code === 0) {
+      fetchData();
+      message.success("充值成功！")
+    } else {
+      message.warn(resp.data.msg)
+    }
+  }).catch(error => {
+    console.error('Request error:', error);
+    message.error('充值请求失败');
+  })
+}
 </script>
 
 <style scoped>

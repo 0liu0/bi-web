@@ -1,6 +1,7 @@
 import axios from "axios";
 import store from "@/store";
 import {Tool} from "@/utils/tool";
+import {message} from "ant-design-vue";
 
 /**
  * Axios初始化操作
@@ -30,6 +31,12 @@ myAxios.interceptors.request.use(function (config) {
     return Promise.reject(error);
 });
 myAxios.interceptors.response.use(function (response) {
+    // 验证响应和数据的存在
+    if (!response || !response.data) {
+        message.error('无效的响应').then(r => r.data);
+        console.error('Invalid response:', response);
+        return;
+    }
     console.log('返回结果：', response);
     return response;
 }, error => {
