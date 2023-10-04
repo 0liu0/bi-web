@@ -15,7 +15,7 @@
               <button @click="saveChanges" class="button-save" style="margin-right: 20px">Save</button>
               <button @click="cancelEdit" class="button-cancel">Cancel</button>
             </div>
-            <div v-else>
+            <div style="padding: 0 250px" v-else>
               <img v-if="imageUrl" :src="imageUrl" alt="avatar" style="width: 100px;height: 100px;border-radius: 50px"/>
               <div v-else>
                 <loading-outlined v-if="loading"></loading-outlined>
@@ -57,7 +57,6 @@
         </a-col>
       </a-row>
       <div>
-        <a-button type="primary" @click="showModal">Open Modal</a-button>
         <a-modal v-model:open="open" title="当前功能尚未开发，请添加下方客服微信联系哦！" @ok="handleOk">
           <div><img src="@/assets/xiaozhi.png"><img style="width: 200px;height: 200px" src="@/assets/admin-weixin.jpg">
           </div>
