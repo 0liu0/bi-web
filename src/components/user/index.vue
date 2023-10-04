@@ -42,18 +42,27 @@
             <p class="privilege"><span>BI豆：</span>{{ userInfo.points }}
               <a-button style="margin-left: 20px" type="primary" size="small" primary @click="getPoints">每日领取
               </a-button>
+              <a-button style="margin-left: 20px" type="primary" size="small" primary @click="getPoints">充值
+              </a-button>
             </p>
             <p class="privilege"><span>身份：</span>{{ userRole }}
-              <a-button style="margin-left: 20px" type="primary" size="small" primary @click="getVIP">获取会员
+              <a-button style="margin-left: 20px" type="primary" size="small" primary @click="showModal">获取会员
               </a-button>
             </p>
             <p class="privilege">
-              <a-button style="margin-top: 10px" type="primary" size="small" primary @click="getVIP">点击更改密码
+              <a-button style="margin-top: 10px" type="primary" size="small" primary @click="showModal">点击更改密码
               </a-button>
             </p>
           </div>
         </a-col>
       </a-row>
+      <div>
+        <a-button type="primary" @click="showModal">Open Modal</a-button>
+        <a-modal v-model:open="open" title="当前功能尚未开发，请添加下方客服微信联系哦！" @ok="handleOk">
+          <div><img src="@/assets/xiaozhi.png"><img style="width: 200px;height: 200px" src="@/assets/admin-weixin.jpg">
+          </div>
+        </a-modal>
+      </div>
     </a-layout>
   </a-layout-content>
 </template>
@@ -66,7 +75,14 @@ import myAxios from "@/utils/myAxios";
 import {message} from "ant-design-vue";
 
 const bgStyle = ref(`background-image: url('${bgImage}');`);
-
+const open = ref(false);
+const showModal = () => {
+  open.value = true;
+};
+const handleOk = e => {
+  console.log(e);
+  open.value = false;
+};
 const userInfo = ref({
   createTime: "2023-09-04T04:44:30.000+00:00",
   headImg: "https://liucheoss.oss-cn-zhangjiakou.aliyuncs.com/2023/07/23/38f20270b7d04878b06082855bd4bf2dikun.jpg",
@@ -158,15 +174,12 @@ const refreshUserInfo = () => {
       // 得到用户最新数据，并保存至前端
       const curInfo = resp.data.data;
       curInfo.token = userInfo.value.token
-      store.commit("setUserToSessionStorage",curInfo);
+      store.commit("setUserToSessionStorage", curInfo);
       userInfo.value = store.state.user
     } else {
       console.log("网络繁忙！")
     }
   })
-}
-const getVIP = () => {
-  console.log("获取会员")
 }
 </script>
 
