@@ -122,6 +122,11 @@ const uploadedFile = ref(null); // 用于存储上传的文件
  * 提交方法给AI分析并获得返回值展示页面
  */
 const onSubmit = () => {
+  // 校验参数
+  if (formState.name.length === 0 || formState.goal.length === 0 || formState.chartType.length === 0 || uploadedFile.value === null) {
+    message.warn("请填写好信息哦，这样小的才能为您生成图片哦！");
+    return;
+  }
   isActive.value = true
   btnLoading.value = true
   const formData = new FormData();
@@ -138,17 +143,16 @@ const onSubmit = () => {
       'Content-Type': 'multipart/form-data'
     }
   }).then(resp => {
-    if (resp.data.code === 0) {
-      message.success("上传成功！正在解析中…………")
+    if (resp.data.code === 0 && resp.data.data.suggestion !== null) {
       echartsInfo = resp.data.data
       // echartsInfo.echarts = echartsInfo.echarts.replace(/'/g, '"').replace(/([{,])\s*([^:{\s]+)\s*:/g, '$1"$2":');
-      console.log('echartsInfo::',echartsInfo)
+      console.log('echartsInfo::', echartsInfo)
       if (myChart && echartsInfo.echarts) {
         const option = echartsInfo.echarts; // 或者其他转换逻辑
         myChart.setOption(option);
       }
     } else {
-      message.error(resp.data.msg)
+      message.warn("小的解析失败，可能原因是内容太多，或者网络阻塞")
     }
     isActive.value = false
     btnLoading.value = false

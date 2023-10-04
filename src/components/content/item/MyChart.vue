@@ -12,7 +12,7 @@
         class="search"
     />
     <a-button type="primary" size="large" style="position: absolute;top: 55px;right: 120px" @click="flush">点我刷新页面</a-button>
-    <a-empty v-if="chartList.length===0" style="margin-top: 400px" description="暂无数据" />
+    <a-empty v-if="chartList.length===0" style="margin-top: 400px" description="暂无数据，快去生成吧！" />
     <div style="padding: 20px;opacity: .75">
       <a-row :gutter="16">
         <div class="echarts" v-for="item in chartList" :key="item.id">

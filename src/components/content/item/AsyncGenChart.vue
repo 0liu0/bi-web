@@ -70,6 +70,11 @@ const beforeUpload = (file) => {
   return false;
 };
 const onSubmit = () => {
+  // 校验参数
+  if (formState.name.length === 0 || formState.goal.length === 0 || formState.chartType.length === 0 || uploadedFile.value === null) {
+    message.warn("请填写好信息哦，这样小的才能为您生成图片哦！");
+    return;
+  }
   btnLoading.value = true
   const formData = new FormData();
   formData.append('name', formState.name);
