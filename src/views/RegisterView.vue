@@ -1,6 +1,6 @@
 <template>
   <div class="loginVideo">
-    <img src="../assets/z1.jpg" alt="nihao" style="width: 100%; height: auto; display: block;">
+    <img src="../assets/z1.jpg" alt="nihao" style="width: auto; height: 100%; display: block;">
     <div class="loginBox">
       <!-- 注册框 -->
       <div class="container">

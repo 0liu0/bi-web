@@ -84,11 +84,13 @@ const userInfo = ref({
 const userRole = computed(() => {
   switch (userInfo.value.role) {
     case 0:
-      return '管理员';
+      return '超级管理员';
     case 1:
-      return 'VIP';
+      return '管理员';
     case 2:
-      return '普通用户';
+      return 'VIP用户';
+    case 3:
+      return '普通用户'
     default:
       return '未知';
   }
