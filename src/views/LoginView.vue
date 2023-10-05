@@ -22,8 +22,11 @@
               <div v-if="userLogin.loginType===1" class="inputBox" id="notify" style="width: 130px">
                 <input type="text" v-model="userLogin.mailCode" placeholder="邮箱验证码"/>
                 <div>
-                  <a-button ghost :loading="btnLoading" shape="round" size="large" style="margin-left: 12px;font-size: 6px;"
-                            @click="sendCode">发送验证码
+                  <a-button ghost :loading="btnLoading" shape="round" size="large"
+                            style="margin-left: 12px;font-size: 6px;"
+                            @click="sendCode">
+                    <span v-show="btnShow">发送验证码</span>
+                    <span style="color: #5297f7" v-show="!btnShow">{{ remainingTime }}秒</span>
                   </a-button>
                 </div>
               </div>
@@ -68,6 +71,8 @@ const userLogin = reactive({
   code: "", // 图形验证码校验
   mailCode: "" // 邮箱验证码需要
 })
+let btnShow = ref(true);
+let remainingTime = ref(0);
 
 const router = useRouter();
 const store = useStore();
@@ -96,20 +101,29 @@ const getCaptcha = () => {
 
 // 发送验证码
 const sendCode = () => {
+  // 校验必填的两个参数有无
+  if (!(userLogin.code && userLogin.mail)) {
+    message.info("邮箱和验证码不能为空哦")
+    return;
+  }
   // 开启一个定时任务，将提交接口置灰3秒钟，防止用户瞎点把自己豆子点没了，毕竟一天三个豆
-  let remainingTime =  60;
+  btnShow.value = false;
+  remainingTime.value = 60;
   btnLoading.value = true;
   countdown = setInterval(() => {
-    remainingTime--;
-    if (remainingTime <= 0) {
+    remainingTime.value--;
+    if (remainingTime.value <= 0) {
       clearInterval(countdown);
       btnLoading.value = false;
+      btnShow.value = true;
     }
   }, 1000);
   myAxios.get(`/api/v1/notify/send-code/1?to=${userLogin.mail}&captchaCode=${userLogin.code}`).then(resp => {
-    if (resp.data.code===0) {
+    if (resp.data.code === 0) {
       message.success("邮箱验证码已发送！")
     } else {
+      btnShow.value = true;
+      btnLoading.value = false;
       message.warn(resp.data.msg)
     }
   })
@@ -117,6 +131,15 @@ const sendCode = () => {
 
 // 登录
 function login() {
+  // 校验必填的两个参数有无
+  if (!(userLogin.code && userLogin.mail)) {
+    message.info("邮箱和验证码不能为空哦")
+    return;
+  }
+  if (userLogin.loginType === 1 && userLogin.mailCode === '') {
+    message.info("邮箱验证码不能为空")
+    return;
+  }
   myAxios.post("/api/v1/user/login", userLogin).then(resp => {
     if (resp.data.code === 0) {
       message.success("恭喜您登录成功！")

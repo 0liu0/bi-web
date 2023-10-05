@@ -40,9 +40,9 @@
           <div class="user-info-container" style="background-color:#fff;opacity: .9">
             <h1 style="font-size: 40px;font-weight: 700;margin-bottom: 30px">我的特权</h1>
             <p class="privilege"><span>BI豆：</span>{{ userInfo.points }}
-              <a-button style="margin-left: 20px" type="primary" size="small" primary @click="gzetPoints">每日领取
+              <a-button style="margin-left: 20px" type="primary" size="small" primary @click="getPoints">每日领取
               </a-button>
-              <a-button style="margin-left: 20px" type="primary" size="small" primary @click="getPoints">充值
+              <a-button style="margin-left: 20px" type="primary" size="small" primary @click="showModal">充值
               </a-button>
             </p>
             <p class="privilege"><span>身份：</span>{{ userRole }}

@@ -12,20 +12,24 @@
                 <input type="text" v-model="userRegisterDTO.mail" placeholder="请输入邮箱账号"/>
               </div>
               <div class="inputBox">
-                <input type="text" v-model="userRegisterDTO.name" placeholder="请输入账号昵称"/>
+                <input type="text" autocomplete="off" v-model="userRegisterDTO.name" placeholder="请输入账号昵称"/>
               </div>
               <div class="inputBox">
-                <input type="text" v-model="userRegisterDTO.pwd" placeholder="请输入账号密码"/>
+                <input id="auto" type="password" autocomplete="off" v-model="userRegisterDTO.pwd"
+                       placeholder="请输入账号密码">
               </div>
               <div class="inputBox" id="notify">
                 <input type="text" v-model="userRegisterDTO.codeCaptcha" placeholder="图形验证码"/>
-                <img @click="getCaptcha()" :src="captcha" alt="nihao" style="border-radius: 20px;width: 85%;margin-left: 10px"/>
+                <img @click="getCaptcha()" :src="captcha" alt="nihao"
+                     style="border-radius: 20px;width: 85%;margin-left: 10px"/>
               </div>
               <div class="inputBox" id="notify" style="width: 130px">
                 <input type="text" v-model="userRegisterDTO.code" placeholder="邮箱验证码"/>
                 <div>
-                  <a-button ghost shape="round" size="large" style="margin-left: 12px;font-size: 6px;"
-                            @click="sendCode">发送验证码
+                  <a-button :loading="btnLoading" ghost shape="round" size="large" style="margin-left: 12px;font-size: 6px;"
+                            @click="sendCode">
+                    <span v-show="btnShow">发送验证码</span>
+                    <span style="color: #5297f7" v-show="!btnShow">{{ remainingTime }}秒</span>
                   </a-button>
                 </div>
               </div>
@@ -63,11 +67,19 @@ let userRegisterDTO = reactive({
   code: "",
   codeCaptcha: ""
 })
-
+let btnShow = ref(true);
+let remainingTime = ref(0);
+let btnLoading = ref(false)
 let captcha = ref("");
 onMounted(() => {
   getCaptcha()
+  clearAutoFill()
 })
+const clearAutoFill = ()=> {
+  const input = document.getElementById('auto')
+  input.value = 'a'
+  console.log("auto:", input)
+}
 const getCaptcha = () => {
   myAxios("/api/v1/notify/captcha/0", {
     method: "GET",
@@ -85,13 +97,31 @@ const getCaptcha = () => {
 }
 // 发送验证码
 const sendCode = () => {
-  myAxios.get('/api/v1/notify/send-code/0',{
+  btnShow.value = false;
+  remainingTime.value = 60;
+  btnLoading.value = true;
+  let countdown;
+  countdown = setInterval(() => {
+    remainingTime.value--;
+    if (remainingTime.value <= 0) {
+      clearInterval(countdown);
+      btnLoading.value = false;
+      btnShow.value = true;
+    }
+  }, 1000);
+  myAxios.get('/api/v1/notify/send-code/0', {
     params: {
       to: userRegisterDTO.mail,
       captchaCode: userRegisterDTO.codeCaptcha
     }
   }).then(resp => {
-    console.log("得到邮箱验证码了：", resp)
+    if (resp.data.code === 0) {
+      message.info('验证码发送成功！')
+    }else {
+      btnShow.value = true;
+      btnLoading.value = false;
+      message.warn(resp.data.msg)
+    }
   })
 }
 
@@ -102,14 +132,20 @@ function login() {
 }
 
 // 注册
-const registry = ()=> {
-  console.log("userRegisterDTO:::",userRegisterDTO)
-  myAxios.post('/api/v1/user/register',userRegisterDTO).then(resp=> {
+const registry = () => {
+  // 校验参数
+  if (!(userRegisterDTO.pwd && userRegisterDTO.codeCaptcha && userRegisterDTO.code && userRegisterDTO.name && userRegisterDTO.mail)) {
+    message.info("请将信息填写完整:", userRegisterDTO.pwd.length)
+    console.log("请将信息填写完整:", userRegisterDTO.pwd.length)
+    return;
+  }
+  console.log("userRegisterDTO:::", userRegisterDTO)
+  myAxios.post('/api/v1/user/register', userRegisterDTO).then(resp => {
     if (resp.data.code === 0) {
       // 先转去登录界面，后面优化成自动登录 todo
       message.success("注册成功！自动跳转登录界面")
       router.push("/login")
-    }else {
+    } else {
       message.error(resp.data.msg)
     }
   })
@@ -121,12 +157,14 @@ const registry = ()=> {
   margin: 0;
   padding: 0;
 }
+
 .loginVideo {
   width: 100%;
   height: 100vh;
   overflow: hidden;
   position: relative;
 }
+
 #notify {
   display: flex;
   width: 130px;
@@ -134,7 +172,7 @@ const registry = ()=> {
 
 #notify div {
   width: 96px;
-  //background: pink;
+//background: pink;
 }
 
 #notify input {
@@ -240,6 +278,7 @@ img {
   width: 100%;
   font-size: 1em;
   padding: 10px 15px;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .container .drop .content form .inputBox input[type="submit"] {
@@ -319,5 +358,9 @@ img {
 
 .btns:hover {
   border-radius: 10%;
+}
+
+a {
+  text-decoration: none;
 }
 </style>
