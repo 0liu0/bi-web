@@ -50,7 +50,7 @@
               </a-button>
             </p>
             <p class="privilege">
-              <a-button style="margin-top: 10px" type="primary" size="small" primary @click="showModal">点击更改密码
+              <a-button style="margin-top: 10px" type="primary" size="small" primary @click="changePWD">修改密码
               </a-button>
             </p>
           </div>
@@ -62,12 +62,57 @@
           </div>
         </a-modal>
       </div>
+      <div>
+        <a-modal v-model:open="showChangePwd" title="用户修改密码" @ok="handleChangePwd">
+          <template #footer>
+            <a-button key="back" @click="changeHandleCancel">取消</a-button>
+            <a-button key="submit" type="primary" :loading="loading" @click="handleChangePwd">提交</a-button>
+          </template>
+          <a-form
+              :model="userChangePwdForm"
+              name="basic"
+              :label-col="{ span: 8 }"
+              :wrapper-col="{ span: 16 }"
+              autocomplete="off"
+          >
+            <a-form-item
+                label="新密码"
+                name=newPWD
+                :rules="[{ required: true, message: '请输入新密码！' }]"
+                autocomplete="off"
+            >
+              <a-input-password v-model:value="userChangePwdForm.newPWD"/>
+            </a-form-item>
+            <a-form-item
+                label="确认密码"
+                name=confirmPWD
+                :rules="[{ required: true, message: '确认密码不可空哦！' }]"
+                autocomplete="off"
+            >
+              <a-input-password v-model:value="userChangePwdForm.confirmPWD"/>
+            </a-form-item>
+            <a-form-item
+                label="邮箱验证"
+                name=mailCode
+                :rules="[{ required: true, message: '请输入邮箱验证码' }]"
+                autocomplete="off"
+            >
+              <a-input-search
+                  v-model:value="userChangePwdForm.mailCode"
+                  placeholder="请输入邮箱验证码"
+                  enter-button="发送验证码"
+                  size="defualt"
+              />
+            </a-form-item>
+          </a-form>
+        </a-modal>
+      </div>
     </a-layout>
   </a-layout-content>
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from 'vue';
+import {computed, onMounted, reactive, ref} from 'vue';
 import bgImage from "@/assets/z1.jpg";
 import store from "@/store";
 import myAxios from "@/utils/myAxios";
@@ -75,6 +120,12 @@ import {message} from "ant-design-vue";
 
 const bgStyle = ref(`background-image: url('${bgImage}');`);
 const open = ref(false);
+const showChangePwd = ref(false);
+let userChangePwdForm = reactive({
+  "newPWD": "",
+  "confirmPWD": "",
+  "mailCode": null
+})
 const showModal = () => {
   open.value = true;
 };
@@ -179,6 +230,18 @@ const refreshUserInfo = () => {
       console.log("网络繁忙！")
     }
   })
+}
+// 更改密码
+const changePWD = () => {
+  console.log("changePWD")
+  // 显示弹出层
+  showChangePwd.value = true
+}
+const changeHandleCancel = () => {
+  showChangePwd.value = false
+}
+const handleChangePwd = () => {
+  console.log("已提交：", userChangePwdForm)
 }
 </script>
 

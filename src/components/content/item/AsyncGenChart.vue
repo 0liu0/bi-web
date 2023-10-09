@@ -115,7 +115,7 @@ const openNotification = placement => {
   api.info({
     message: `${placement}`,
     description:
-        '小的正在解析您的文件哦，不要急！',
+        '小的正在解析您的文件哦！解析进度可前往【我的图表】进行查看！',
     // placement,
   });
 };
